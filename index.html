@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Oficial | Jack Medic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+        :root { 
+            --primary: #E08B25; 
+            --bg: #F8F9FA; 
+            --text: #333333; 
+            --card-bg: #FFFFFF; 
+            --grey-text: #666666;
+            --whatsapp: #25D366;
+        }
+
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 90px; }
+
+        header { width: 100%; background-color: var(--card-bg); padding: 15px 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; text-align: center; }
+        .marca-completa { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .linea1-texto { font-size: 14px; font-weight: 600; letter-spacing: 2px; color: var(--grey-text); text-transform: uppercase; }
+        .logo-firma-img { height: 40px; object-fit: contain; margin: 5px 0; }
+        .linea3-texto { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--primary); }
+
+        main { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .barra-busqueda { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+        .barra-busqueda:focus { border-color: var(--primary); }
+        
+        .filtros-categoria { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px; scrollbar-width: none; }
+        .filtros-categoria::-webkit-scrollbar { display: none; }
+        .chip-cat { background: #eee; color: var(--grey-text); border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Montserrat', sans-serif; transition: all 0.2s; }
+        .chip-cat.activo { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(224, 139, 37, 0.4); }
+
+        .titulo-seccion { font-size: 14px; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: 600; text-align: center;}
+
+        /* Acordeón Principal */
+        .acordeon-btn { background-color: var(--card-bg); color: var(--text); cursor: pointer; padding: 15px 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 16px; font-weight: 700; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); font-family: 'Montserrat', sans-serif; transition: background-color 0.2s, border-radius 0.2s; }
+        .acordeon-btn.activo { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; border-bottom: 1px solid #eee; background-color: #fafafa; }
+        .acordeon-contenido { padding: 5px 15px 15px 15px; display: none; background-color: var(--card-bg); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); border-left: 4px solid var(--primary); }
+
+        /* Sub-agrupación por Color y Cuadrículas de Tallas */
+        .subtitulo-color { background-color: #f5f5f5; color: var(--grey-text); font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 4px; margin: 15px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #ccc; }
+        .subtitulo-color:first-child { margin-top: 10px; }
+        .grid-tallas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .item-talla { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
+        .item-talla:active { background: #fdfdfd; border-color: var(--primary); }
+        .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .talla-datos { display: flex; flex-direction: column; align-items: flex-end; }
+        .talla-disp { font-size: 11px; font-weight: bold; color: #25D366; }
+        .talla-precio { font-size: 12px; color: var(--text); font-weight: 700; margin-top: 2px;}
+
+        /* Controles y Modales */
+        .controles-flotantes { position: fixed; bottom: 20px; width: 100%; max-width: 480px; display: flex; justify-content: center; padding: 0 20px; box-sizing: border-box; z-index: 1000; pointer-events: none; }
+        .btn-flotante { pointer-events: auto; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 50px; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; box-shadow: 0 4px 15px rgba(224, 139, 37, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.2s; }
+        .btn-flotante:active { transform: scale(0.98); }
+        .badge-carrito { background: white; color: var(--primary); font-size: 14px; padding: 2px 10px; border-radius: 20px; font-weight: 700; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; text-align: center; }
+        .modal-content h3 { margin-top: 0; color: var(--primary); font-weight: 700; }
+        
+        .btn-whatsapp { background: var(--whatsapp); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: 700; font-size: 16px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);}
+        .btn-cancelar { background: transparent; color: #999; border: none; padding: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 5px; }
+        
+        .item-carrito { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; text-align: left;}
+        .total-carrito { font-size: 22px; font-weight: 700; text-align: right; margin-top: 15px; color: var(--text); border-top: 2px solid #eee; padding-top: 15px;}
+        .loading { text-align: center; padding: 50px; color: #999; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="marca-completa">
+            <span class="linea1-texto">Uniformes Médicos</span>
+            <img src="tu-firma.png" alt="Jack Medic" class="logo-firma-img">
+            <span class="linea3-texto">VENTAS POR MAYOR Y MENOR A TODO EL PERÚ</span>
+        </div>
+    </header>
+
+    <main>
+        <input type="text" id="buscador" class="barra-busqueda" placeholder="Buscar modelo, color o talla..." onkeyup="filtrarInventario()">
+        
+        <div class="filtros-categoria" id="contenedor-categorias">
+            </div>
+
+        <h2 class="titulo-seccion">Nuestros Modelos</h2>
+        <div id="contenedor-productos"><div class="loading">Cargando catálogo oficial...</div></div>
+    </main>
+
+    <div class="controles-flotantes">
+        <button class="btn-flotante" onclick="abrirCarrito()">
+            🛒 Ver Mi Pedido <span id="contador-carrito" class="badge-carrito">0</span>
+        </button>
+    </div>
+
+    <div class="modal-overlay" id="modal-carrito">
+        <div class="modal-content">
+            <h3>Resumen de tu Pedido</h3>
+            <div id="lista-carrito">Aún no has agregado productos.</div>
+            <div class="total-carrito" id="total-carrito">Total: S/ 0.00</div>
+            
+            <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+                📱 Enviar Pedido a Jack Medic
+            </button>
+            
+            <button class="btn-cancelar" onclick="document.getElementById('modal-carrito').style.display='none'">← Seguir comprando</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ⚠️
+        const URL_API = "https://script.google.com/macros/s/AKfycbwad79SiHEQTH0k439fXFbBL1H4-Ly4oQGfBEfjXf3qZdrrsEVIS2f7tNQRm2wj-BQ2Zg/exec"; 
+
+        let inventarioGlobal = [];
+        let carrito = []; 
+        let categoriaSeleccionada = "Todas"; 
+
+        async function cargarInventario() {
+            try {
+                const response = await fetch(URL_API);
+                inventarioGlobal = await response.json();
+                actualizarFiltroCategorias(); 
+                filtrarInventario();
+            } catch (error) {
+                document.getElementById('contenedor-productos').innerHTML = "<div style='text-align:center;'>Error al cargar el catálogo. Por favor, recarga la página.</div>";
+            }
+        }
+
+        function actualizarFiltroCategorias() {
+            const contenedor = document.getElementById('contenedor-categorias');
+            const categoriasUnicas = [...new Set(inventarioGlobal.map(p => p.categoria).filter(c => c))];
+            
+            let html = `<button class="chip-cat ${categoriaSeleccionada === 'Todas' ? 'activo' : ''}" onclick="seleccionarCategoria('Todas')">Todas</button>`;
+            
+            categoriasUnicas.forEach(cat => {
+                html += `<button class="chip-cat ${categoriaSeleccionada === cat ? 'activo' : ''}" onclick="seleccionarCategoria('${cat}')">${cat}</button>`;
+            });
+            
+            contenedor.innerHTML = html;
+        }
+
+        function seleccionarCategoria(cat) {
+            categoriaSeleccionada = cat;
+            actualizarFiltroCategorias(); 
+            filtrarInventario(); 
+        }
+
+        function filtrarInventario() {
+            const txt = document.getElementById('buscador').value.toLowerCase();
+            
+            const filtrados = inventarioGlobal.filter(p => {
+                if(!p.sku || !p.modelo || p.stock <= 0) return false; // Solo mostramos lo que tiene stock
+                
+                const matchCat = (categoriaSeleccionada === "Todas" || p.categoria === categoriaSeleccionada);
+                const matchTxt = (p.modelo.toLowerCase().includes(txt) || p.color.toLowerCase().includes(txt) || String(p.talla).toLowerCase().includes(txt));
+                
+                return matchCat && matchTxt;
+            });
+            renderizarProductosAgrupados(filtrados);
+        }
+
+        function renderizarProductosAgrupados(productos) {
+            const contenedor = document.getElementById('contenedor-productos');
+            contenedor.innerHTML = '';
+            
+            if(productos.length === 0) {
+                contenedor.innerHTML = '<div class="loading">No encontramos productos con esa búsqueda.</div>';
+                return;
+            }
+
+            const agrupados = productos.reduce((acc, p) => {
+                const nombreGrupo = `${p.categoria} - ${p.modelo}`;
+                if (!acc[nombreGrupo]) {
+                    acc[nombreGrupo] = { categoria: p.categoria, modelo: p.modelo, variantes: [] };
+                }
+                acc[nombreGrupo].variantes.push(p);
+                return acc;
+            }, {});
+
+            Object.keys(agrupados).forEach((llave, index) => {
+                const grupo = agrupados[llave];
+                const idPanel = `panel-${index}`;
+
+                const btnGrupo = document.createElement('button');
+                btnGrupo.className = 'acordeon-btn';
+                btnGrupo.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; color: var(--primary); text-transform: uppercase;">${grupo.categoria}</span>
+                        <span>${grupo.modelo}</span>
+                    </div>
+                    <div style="text-align: right; display: flex; align-items: center; gap: 10px;">
+                        <span class="flecha" style="color: #ccc; font-size: 12px;">▼ Ver Opciones</span>
+                    </div>
+                `;
+
+                const panel = document.createElement('div');
+                panel.id = idPanel;
+                panel.className = 'acordeon-contenido';
+
+                const agrupadoPorColor = grupo.variantes.reduce((accCol, p) => {
+                    const colorName = (p.color || "Varios").toUpperCase();
+                    if (!accCol[colorName]) accCol[colorName] = [];
+                    accCol[colorName].push(p);
+                    return accCol;
+                }, {});
+
+                Object.keys(agrupadoPorColor).forEach(colorKey => {
+                    const divColor = document.createElement('div');
+                    divColor.className = 'subtitulo-color';
+                    divColor.innerText = `🎨 ${colorKey}`;
+                    panel.appendChild(divColor);
+
+                    const gridTallas = document.createElement('div');
+                    gridTallas.className = 'grid-tallas';
+
+                    agrupadoPorColor[colorKey].forEach(p => {
+                        const precio = (typeof p.precioVenta === 'number') ? p.precioVenta.toFixed(2) : parseFloat(p.precioVenta || 0).toFixed(2);
+                        
+                        const itemTalla = document.createElement('div');
+                        itemTalla.className = 'item-talla';
+                        itemTalla.onclick = () => preguntarCantidad(p);
+                        
+                        itemTalla.innerHTML = `
+                            <span class="talla-nombre">${p.talla}</span>
+                            <div class="talla-datos">
+                                <span class="talla-disp">✓ Disponible</span>
+                                <span class="talla-precio">S/ ${precio}</span>
+                            </div>
+                        `;
+                        gridTallas.appendChild(itemTalla);
+                    });
+
+                    panel.appendChild(gridTallas);
+                });
+
+                btnGrupo.onclick = function() {
+                    this.classList.toggle("activo");
+                    const flecha = this.querySelector('.flecha');
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                        flecha.innerText = "▼ Ver Opciones";
+                    } else {
+                        panel.style.display = "block";
+                        flecha.innerText = "▲ Ocultar";
+                    }
+                };
+
+                contenedor.appendChild(btnGrupo);
+                contenedor.appendChild(panel);
+            });
+        }
+
+        function preguntarCantidad(producto) {
+            const qty = prompt(`¿Cuántas unidades de ${producto.modelo} (${producto.talla} - ${producto.color}) deseas agregar a tu pedido?`);
+            if (qty && !isNaN(qty) && parseInt(qty) > 0) {
+                carrito.push({
+                    modelo: producto.modelo, talla: producto.talla, color: producto.color,
+                    cantidad: parseInt(qty), precio: parseFloat(producto.precioVenta) || 0
+                });
+                
+                document.getElementById('contador-carrito').innerText = carrito.length;
+            }
+        }
+
+        function abrirCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            let html = '';
+            let total = 0;
+            
+            if (carrito.length === 0) {
+                lista.innerHTML = "Aún no has agregado productos a tu carrito.";
+                document.getElementById('total-carrito').innerText = "Total: S/ 0.00";
+            } else {
+                carrito.forEach(item => {
+                    const subtotal = item.cantidad * item.precio;
+                    total += subtotal;
+                    html += `<div class="item-carrito">
+                                <span><strong>${item.cantidad}x</strong> ${item.modelo} (${item.talla} - ${item.color})</span>
+                                <span>S/ ${subtotal.toFixed(2)}</span>
+                             </div>`;
+                });
+                lista.innerHTML = html;
+                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
+            }
+            document.getElementById('modal-carrito').style.display = 'flex';
+        }
+
+        function enviarWhatsApp() {
+            if (carrito.length === 0) {
+                alert("Tu carrito está vacío. Agrega productos para enviar tu pedido.");
+                return;
+            }
+
+            let mensaje = "¡Hola equipo de *Jack Medic*! 👋\nMe gustaría realizar el siguiente pedido para envío a nivel nacional:\n\n*Mi Carrito:*\n";
+            let total = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.cantidad * item.precio;
+                total += subtotal;
+                mensaje += `▪️ ${item.cantidad}x ${item.modelo} (${item.talla} - ${item.color}) : S/ ${subtotal.toFixed(2)}\n`;
+            });
+
+            mensaje += `\n*Total a pagar: S/ ${total.toFixed(2)}*\n\nPor favor, indíquenme los pasos a seguir para el pago y la coordinación del envío. ¡Gracias!`;
+
+            const numeroWhatsApp = "51941024757"; // Número integrado
+            const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        window.onload = cargarInventario;
+    </script>
+</body>
+</html>
