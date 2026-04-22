@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -49,7 +49,7 @@
         .grid-tallas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .item-talla { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         
-        .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); display: block;}
         .talla-stock { font-size: 14px; font-weight: 700; color: var(--text); }
         .talla-disp { font-size: 9px; color: #999; }
 
@@ -138,7 +138,6 @@
             }
         }
 
-        // NUEVA FUNCIÓN: Resumen de Ventas del día
         async function verResumenHoy() {
             try {
                 const res = await fetch(URL_API + "?action=resumen_hoy");
@@ -234,10 +233,23 @@
                     const grid = document.createElement('div');
                     grid.className = 'grid-tallas';
                     porColor[color].forEach(p => {
+                        // Formateamos el precio para que se vea como moneda
+                        const precio = parseFloat(p.precioVenta || 0).toFixed(2);
+                        
                         const item = document.createElement('div');
                         item.className = 'item-talla';
                         item.onclick = () => preguntarCantidad(p);
-                        item.innerHTML = `<span class="talla-nombre">${p.talla}</span><div style="text-align:right;"><span class="talla-stock" style="${p.stock <= p.stockMinimo ? 'color:var(--danger);' : ''}">${p.stock}</span><br><span class="talla-disp">disp.</span></div>`;
+                        
+                        // Aquí agregué el precio debajo del nombre de la talla
+                        item.innerHTML = `
+                            <div>
+                                <span class="talla-nombre">${p.talla}</span>
+                                <span style="display:block; font-size: 11px; color: var(--grey-text); font-weight: 700;">S/ ${precio}</span>
+                            </div>
+                            <div style="text-align:right;">
+                                <span class="talla-stock" style="${p.stock <= p.stockMinimo ? 'color:var(--danger);' : ''}">${p.stock}</span><br>
+                                <span class="talla-disp">disp.</span>
+                            </div>`;
                         grid.appendChild(item);
                     });
                     panel.appendChild(grid);
@@ -278,47 +290,4 @@
                     html += `<div class="item-carrito"><span><strong>${item.cantidad}x</strong> ${item.modelo} (${item.talla})</span><span>S/ ${sub.toFixed(2)}</span></div>`;
                 });
                 lista.innerHTML = html;
-                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
-            }
-            document.getElementById('modal-carrito').style.display = 'flex';
-        }
-
-        function enviarWhatsApp() {
-            if (carrito.length === 0) return;
-            let msg = "¡Hola! Gracias por elegir a *Jack Medic* 👨‍⚕️\n*Voucher de Pedido:*\n\n";
-            let total = 0;
-            carrito.forEach(item => {
-                const sub = item.cantidad * item.precio;
-                total += sub;
-                msg += `▪️ ${item.cantidad}x ${item.modelo} (${item.talla} - ${item.color}) : S/ ${sub.toFixed(2)}\n`;
-            });
-            msg += `\n*Total a pagar: S/ ${total.toFixed(2)}*\n\nRealizamos envíos *a nivel nacional*.`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        async function despacharCarrito() {
-            if (carrito.length === 0) return;
-            const btn = document.getElementById('btn-confirmar');
-            btn.innerText = "Procesando...";
-            try {
-                await fetch(URL_API, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "vender_lote", carrito: carrito })
-                });
-                alert("¡Despacho exitoso! El stock se actualizó en el Excel.");
-                carrito = [];
-                document.getElementById('contador-carrito').innerText = "0";
-                document.getElementById('modal-carrito').style.display = 'none';
-                document.getElementById('contenedor-productos').innerHTML = "<div class='loading'>Sincronizando...</div>";
-                cargarInventario();
-            } catch(e) {
-                alert("Error al conectar con Excel.");
-            } finally {
-                btn.innerText = "Finalizar Venta (Excel)";
-            }
-        }
-
-        window.onload = cargarInventario;
-    </script>
-</body>
-</html>
+                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2
