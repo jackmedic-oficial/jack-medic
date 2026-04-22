@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto de Venta | Jack Medic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+        :root { 
+            --primary: #E08B25; 
+            --bg: #F8F9FA; 
+            --text: #333333; 
+            --card-bg: #FFFFFF; 
+            --grey-text: #666666;
+        }
+
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 90px; }
+
+        header { width: 100%; background-color: var(--card-bg); padding: 10px 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; text-align: center; }
+        .marca-completa { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 8px; }
+        .linea1-texto { font-size: 14px; font-weight: 600; letter-spacing: 2px; color: var(--grey-text); text-transform: uppercase; }
+        .logo-firma-img { height: 35px; object-fit: contain; }
+        .linea3-texto { font-size: 11px; font-weight: 400; letter-spacing: 0.5px; color: var(--primary); }
+        .controles-sede { display: flex; justify-content: center; width: 100%; }
+        .selector-sede { background-color: transparent; color: var(--text); border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; outline: none; cursor: pointer; }
+
+        main { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .barra-busqueda { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+        .barra-busqueda:focus { border-color: var(--primary); }
+        .titulo-seccion { font-size: 14px; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: 600; }
+
+        /* Acordeón Principal */
+        .acordeon-btn {
+            background-color: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            padding: 15px 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+            font-family: 'Montserrat', sans-serif;
+            transition: background-color 0.2s, border-radius 0.2s;
+        }
+        .acordeon-btn.activo {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid #eee;
+            background-color: #fafafa;
+        }
+        .acordeon-contenido {
+            padding: 5px 15px 15px 15px;
+            display: none;
+            background-color: var(--card-bg);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* NUEVOS ESTILOS: Sub-agrupación por Color y Cuadrículas de Tallas */
+        .subtitulo-color {
+            background-color: #f5f5f5;
+            color: var(--grey-text);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin: 15px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-left: 3px solid #ccc;
+        }
+        
+        .subtitulo-color:first-child { margin-top: 10px; }
+
+        .grid-tallas {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Crea 2 columnas perfectas */
+            gap: 8px;
+        }
+
+        .item-talla {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        
+        .item-talla:active { background: #fdfdfd; border-color: var(--primary); }
+        
+        .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .talla-datos { display: flex; flex-direction: column; align-items: flex-end; }
+        .talla-stock { font-size: 14px; font-weight: 700; color: var(--text); }
+        .talla-disp { font-size: 9px; font-weight: normal; color: #999; }
+        .talla-precio { font-size: 10px; color: var(--grey-text); font-weight: 600; margin-top: 2px;}
+
+        /* Controles y Modales */
+        .controles-flotantes { position: fixed; bottom: 20px; width: 100%; max-width: 480px; display: flex; justify-content: center; padding: 0 20px; box-sizing: border-box; z-index: 1000; pointer-events: none; }
+        .btn-flotante { pointer-events: auto; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 50px; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; box-shadow: 0 4px 15px rgba(224, 139, 37, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.2s; }
+        .btn-flotante:active { transform: scale(0.98); }
+        .badge-carrito { background: white; color: var(--primary); font-size: 14px; padding: 2px 10px; border-radius: 20px; font-weight: 700; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        .modal-content h3 { margin-top: 0; color: var(--primary); font-weight: 700; }
+        
+        .btn-accion { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: 700; font-size: 16px; margin-top: 15px; cursor: pointer; }
+        .btn-cancelar { background: transparent; color: #999; border: none; padding: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 5px; }
+        
+        .item-carrito { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .total-carrito { font-size: 20px; font-weight: 700; text-align: right; margin-top: 15px; color: var(--primary); }
+        .loading { text-align: center; padding: 50px; color: #999; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="marca-completa">
+            <span class="linea1-texto">Uniformes Médicos</span>
+            <img src="tu-firma.png" alt="Jack Medic" class="logo-firma-img">
+            <span class="linea3-texto">Ventas por Mayor y Menor a todo el Perú</span>
+        </div>
+        <div class="controles-sede">
+            <select id="filtro-sede" class="selector-sede" onchange="filtrarInventario()">
+                <option value="Todas">Todas las Sedes</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <input type="text" id="buscador" class="barra-busqueda" placeholder="Buscar modelo, color o talla..." onkeyup="filtrarInventario()">
+        <h2 class="titulo-seccion">Catálogo Agrupado</h2>
+        <div id="contenedor-productos"><div class="loading">Sincronizando con tu Excel...</div></div>
+    </main>
+
+    <div class="controles-flotantes">
+        <button class="btn-flotante" onclick="abrirCarrito()">
+            🛒 Confirmar Despacho <span id="contador-carrito" class="badge-carrito">0</span>
+        </button>
+    </div>
+
+    <div class="modal-overlay" id="modal-carrito">
+        <div class="modal-content">
+            <h3>Resumen de Venta</h3>
+            <div id="lista-carrito">Aún no has tocado ningún producto.</div>
+            <div class="total-carrito" id="total-carrito">Total: S/ 0.00</div>
+            <button class="btn-accion" id="btn-confirmar" onclick="despacharCarrito()">Finalizar Venta</button>
+            <button class="btn-cancelar" onclick="document.getElementById('modal-carrito').style.display='none'">← Seguir buscando</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ⚠️
+        const URL_API = "https://script.google.com/macros/s/AKfycbwad79SiHEQTH0k439fXFbBL1H4-Ly4oQGfBEfjXf3qZdrrsEVIS2f7tNQRm2wj-BQ2Zg/exec"; 
+
+        let inventarioGlobal = [];
+        let carrito = []; 
+
+        async function cargarInventario() {
+            try {
+                const response = await fetch(URL_API);
+                inventarioGlobal = await response.json();
+                actualizarFiltroSedes();
+                filtrarInventario();
+            } catch (error) {
+                document.getElementById('contenedor-productos').innerHTML = "<div style='text-align:center;'>Error de conexión.</div>";
+            }
+        }
+
+        function actualizarFiltroSedes() {
+            const selector = document.getElementById('filtro-sede');
+            const sedesUnicas = [...new Set(inventarioGlobal.map(p => p.sede).filter(s => s))];
+            selector.innerHTML = '<option value="Todas">Todas las Sedes</option>';
+            sedesUnicas.forEach(sede => selector.innerHTML += `<option value="${sede}">${sede}</option>`);
+        }
+
+        function filtrarInventario() {
+            const txt = document.getElementById('buscador').value.toLowerCase();
+            const sede = document.getElementById('filtro-sede').value;
+            const filtrados = inventarioGlobal.filter(p => {
+                if(!p.sku || !p.modelo) return false;
+                return (sede === "Todas" || p.sede === sede) && (p.modelo.toLowerCase().includes(txt) || p.sku.toLowerCase().includes(txt) || p.color.toLowerCase().includes(txt) || p.categoria.toLowerCase().includes(txt) || String(p.talla).toLowerCase().includes(txt));
+            });
+            renderizarProductosAgrupados(filtrados);
+        }
+
+        function renderizarProductosAgrupados(productos) {
+            const contenedor = document.getElementById('contenedor-productos');
+            contenedor.innerHTML = '';
+            
+            if(productos.length === 0) {
+                contenedor.innerHTML = '<div class="loading">No hay productos. Verifica tu búsqueda o Google Sheets.</div>';
+                return;
+            }
+
+            // 1. Agrupar la lista de productos por Categoría y Modelo
+            const agrupados = productos.reduce((acc, p) => {
+                const nombreGrupo = `${p.categoria} - ${p.modelo}`;
+                if (!acc[nombreGrupo]) {
+                    acc[nombreGrupo] = { categoria: p.categoria, modelo: p.modelo, totalStock: 0, variantes: [] };
+                }
+                acc[nombreGrupo].variantes.push(p);
+                acc[nombreGrupo].totalStock += (parseInt(p.stock) || 0);
+                return acc;
+            }, {});
+
+            // 2. Crear el HTML
+            Object.keys(agrupados).forEach((llave, index) => {
+                const grupo = agrupados[llave];
+                const idPanel = `panel-${index}`;
+
+                // Botón Acordeón Principal
+                const btnGrupo = document.createElement('button');
+                btnGrupo.className = 'acordeon-btn';
+                btnGrupo.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; color: var(--primary); text-transform: uppercase;">${grupo.categoria}</span>
+                        <span>${grupo.modelo}</span>
+                    </div>
+                    <div style="text-align: right; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 14px; font-weight: 600;">Stock: ${grupo.totalStock}</span>
+                        <span class="flecha" style="color: #ccc; font-size: 12px;">▼</span>
+                    </div>
+                `;
+
+                // Panel Oculto
+                const panel = document.createElement('div');
+                panel.id = idPanel;
+                panel.className = 'acordeon-contenido';
+
+                // 3. Sub-agrupar las variantes de este modelo por COLOR
+                const agrupadoPorColor = grupo.variantes.reduce((accCol, p) => {
+                    const colorName = (p.color || "Varios").toUpperCase();
+                    if (!accCol[colorName]) accCol[colorName] = [];
+                    accCol[colorName].push(p);
+                    return accCol;
+                }, {});
+
+                // 4. Dibujar los Colores y sus Tallas en Cuadrícula
+                Object.keys(agrupadoPorColor).forEach(colorKey => {
+                    // Título del Color
+                    const divColor = document.createElement('div');
+                    divColor.className = 'subtitulo-color';
+                    divColor.innerText = `🎨 ${colorKey}`;
+                    panel.appendChild(divColor);
+
+                    // Contenedor Grid (2 columnas) para las tallas
+                    const gridTallas = document.createElement('div');
+                    gridTallas.className = 'grid-tallas';
+
+                    agrupadoPorColor[colorKey].forEach(p => {
+                        const precio = (typeof p.precioVenta === 'number') ? p.precioVenta.toFixed(2) : parseFloat(p.precioVenta || 0).toFixed(2);
+                        
+                        const itemTalla = document.createElement('div');
+                        itemTalla.className = 'item-talla';
+                        itemTalla.onclick = () => preguntarCantidad(p);
+                        
+                        itemTalla.innerHTML = `
+                            <span class="talla-nombre">${p.talla}</span>
+                            <div class="talla-datos">
+                                <span class="talla-stock" style="${p.stock <= 5 ? 'color:#D9534F;' : ''}">${p.stock} <span class="talla-disp">disp.</span></span>
+                                <span class="talla-precio">S/ ${precio}</span>
+                            </div>
+                        `;
+                        gridTallas.appendChild(itemTalla);
+                    });
+
+                    panel.appendChild(gridTallas);
+                });
+
+                // Lógica del acordeón
+                btnGrupo.onclick = function() {
+                    this.classList.toggle("activo");
+                    const flecha = this.querySelector('.flecha');
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                        flecha.innerText = "▼";
+                    } else {
+                        panel.style.display = "block";
+                        flecha.innerText = "▲";
+                    }
+                };
+
+                contenedor.appendChild(btnGrupo);
+                contenedor.appendChild(panel);
+            });
+        }
+
+        function preguntarCantidad(producto) {
+            const qty = prompt(`¿Cuántas unidades de ${producto.modelo} (${producto.talla} - ${producto.color}) vas a vender?`);
+            if (qty && !isNaN(qty) && parseInt(qty) > 0) {
+                if (parseInt(qty) > producto.stock) { alert("Stock insuficiente en esta sede."); return; }
+                
+                carrito.push({
+                    sku: producto.sku, sede: producto.sede, modelo: producto.modelo, talla: producto.talla, color: producto.color,
+                    cantidad: parseInt(qty), precio: parseFloat(producto.precioVenta) || 0
+                });
+                
+                document.getElementById('contador-carrito').innerText = carrito.length;
+            }
+        }
+
+        function abrirCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            let html = '';
+            let total = 0;
+            
+            if (carrito.length === 0) {
+                lista.innerHTML = "Aún no has tocado ningún producto para vender.";
+                document.getElementById('total-carrito').innerText = "Total: S/ 0.00";
+            } else {
+                carrito.forEach(item => {
+                    const subtotal = item.cantidad * item.precio;
+                    total += subtotal;
+                    html += `<div class="item-carrito">
+                                <span><strong>${item.cantidad}x</strong> ${item.modelo} (${item.talla} - ${item.color})</span>
+                                <span>S/ ${subtotal.toFixed(2)}</span>
+                             </div>`;
+                });
+                lista.innerHTML = html;
+                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
+            }
+            document.getElementById('modal-carrito').style.display = 'flex';
+        }
+
+        async function despacharCarrito() {
+            if (carrito.length === 0) return;
+            const btn = document.getElementById('btn-confirmar');
+            btn.innerText = "Procesando...";
+            
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "vender_lote", carrito: carrito })
+                });
+                
+                alert("¡Venta registrada con éxito!");
+                carrito = []; 
+                document.getElementById('contador-carrito').innerText = "0";
+                document.getElementById('modal-carrito').style.display = 'none';
+                
+                document.getElementById('contenedor-productos').innerHTML = "<div class='loading'>Actualizando tu Excel...</div>";
+                cargarInventario();
+            } catch(e) {
+                alert("Error al despachar.");
+            } finally {
+                btn.innerText = "Finalizar Venta";
+            }
+        }
+
+        window.onload = cargarInventario;
+    </script>
+</body>
+</html>
