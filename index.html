@@ -247,4 +247,29 @@
                 carrito.forEach(item => {
                     const subtotal = item.cantidad * item.precio;
                     total += subtotal;
-                    html += `<div class="item-carrito
+                    html += `<div class="item-carrito"><span><strong>${item.cantidad}x</strong> ${item.modelo} (${item.talla})</span><span>S/ ${subtotal.toFixed(2)}</span></div>`;
+                });
+                lista.innerHTML = html;
+                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
+            }
+            document.getElementById('modal-carrito').style.display = 'flex';
+        }
+
+        function enviarWhatsApp() {
+            if (carrito.length === 0) return;
+            let mensaje = "¡Hola *Jack Medic*! 👋\nMe gustaría realizar el siguiente pedido:\n\n";
+            let total = 0;
+            carrito.forEach(item => {
+                const subtotal = item.cantidad * item.precio;
+                total += subtotal;
+                mensaje += `▪️ ${item.cantidad}x ${item.modelo} (${item.talla} - ${item.color}) : S/ ${subtotal.toFixed(2)}\n`;
+            });
+            mensaje += `\n*Total: S/ ${total.toFixed(2)}*\n\nCoordinamos el envío a nivel nacional.`;
+            const urlWhatsApp = `https://wa.me/51941024757?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        window.onload = cargarInventario;
+    </script>
+</body>
+</html>
