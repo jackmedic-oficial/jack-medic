@@ -290,4 +290,47 @@
                     html += `<div class="item-carrito"><span><strong>${item.cantidad}x</strong> ${item.modelo} (${item.talla})</span><span>S/ ${sub.toFixed(2)}</span></div>`;
                 });
                 lista.innerHTML = html;
-                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2
+                document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
+            }
+            document.getElementById('modal-carrito').style.display = 'flex';
+        }
+
+        function enviarWhatsApp() {
+            if (carrito.length === 0) return;
+            let msg = "¡Hola! Gracias por elegir a *Jack Medic* 👨‍⚕️\n*Voucher de Pedido:*\n\n";
+            let total = 0;
+            carrito.forEach(item => {
+                const sub = item.cantidad * item.precio;
+                total += sub;
+                msg += `▪️ ${item.cantidad}x ${item.modelo} (${item.talla} - ${item.color}) : S/ ${sub.toFixed(2)}\n`;
+            });
+            msg += `\n*Total a pagar: S/ ${total.toFixed(2)}*\n\nRealizamos envíos *a nivel nacional*.`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        async function despacharCarrito() {
+            if (carrito.length === 0) return;
+            const btn = document.getElementById('btn-confirmar');
+            btn.innerText = "Procesando...";
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "vender_lote", carrito: carrito })
+                });
+                alert("¡Despacho exitoso! El stock se actualizó en el Excel.");
+                carrito = [];
+                document.getElementById('contador-carrito').innerText = "0";
+                document.getElementById('modal-carrito').style.display = 'none';
+                document.getElementById('contenedor-productos').innerHTML = "<div class='loading'>Sincronizando...</div>";
+                cargarInventario();
+            } catch(e) {
+                alert("Error al conectar con Excel.");
+            } finally {
+                btn.innerText = "Finalizar Venta (Excel)";
+            }
+        }
+
+        window.onload = cargarInventario;
+    </script>
+</body>
+</html>
