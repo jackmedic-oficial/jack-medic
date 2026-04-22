@@ -13,6 +13,7 @@
             --text: #333333; 
             --card-bg: #FFFFFF; 
             --grey-text: #666666;
+            --whatsapp: #25D366;
         }
 
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 90px; }
@@ -52,58 +53,16 @@
             font-family: 'Montserrat', sans-serif;
             transition: background-color 0.2s, border-radius 0.2s;
         }
-        .acordeon-btn.activo {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            margin-bottom: 0;
-            border-bottom: 1px solid #eee;
-            background-color: #fafafa;
-        }
-        .acordeon-contenido {
-            padding: 5px 15px 15px 15px;
-            display: none;
-            background-color: var(--card-bg);
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-            border-left: 4px solid var(--primary);
-        }
+        .acordeon-btn.activo { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; border-bottom: 1px solid #eee; background-color: #fafafa; }
+        .acordeon-contenido { padding: 5px 15px 15px 15px; display: none; background-color: var(--card-bg); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); border-left: 4px solid var(--primary); }
 
-        /* NUEVOS ESTILOS: Sub-agrupación por Color y Cuadrículas de Tallas */
-        .subtitulo-color {
-            background-color: #f5f5f5;
-            color: var(--grey-text);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin: 15px 0 8px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-left: 3px solid #ccc;
-        }
-        
+        /* Sub-agrupación por Color y Cuadrículas de Tallas */
+        .subtitulo-color { background-color: #f5f5f5; color: var(--grey-text); font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 4px; margin: 15px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #ccc; }
         .subtitulo-color:first-child { margin-top: 10px; }
 
-        .grid-tallas {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Crea 2 columnas perfectas */
-            gap: 8px;
-        }
+        .grid-tallas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        .item-talla {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-        
+        .item-talla { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
         .item-talla:active { background: #fdfdfd; border-color: var(--primary); }
         
         .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); }
@@ -123,10 +82,11 @@
         .modal-content h3 { margin-top: 0; color: var(--primary); font-weight: 700; }
         
         .btn-accion { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: 700; font-size: 16px; margin-top: 15px; cursor: pointer; }
+        .btn-whatsapp { background: var(--whatsapp); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .btn-cancelar { background: transparent; color: #999; border: none; padding: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 5px; }
         
         .item-carrito { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-        .total-carrito { font-size: 20px; font-weight: 700; text-align: right; margin-top: 15px; color: var(--primary); }
+        .total-carrito { font-size: 20px; font-weight: 700; text-align: right; margin-top: 15px; color: var(--text); }
         .loading { text-align: center; padding: 50px; color: #999; }
     </style>
 </head>
@@ -162,7 +122,12 @@
             <h3>Resumen de Venta</h3>
             <div id="lista-carrito">Aún no has tocado ningún producto.</div>
             <div class="total-carrito" id="total-carrito">Total: S/ 0.00</div>
-            <button class="btn-accion" id="btn-confirmar" onclick="despacharCarrito()">Finalizar Venta</button>
+            
+            <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+                📱 Enviar Resumen por WhatsApp
+            </button>
+            
+            <button class="btn-accion" id="btn-confirmar" onclick="despacharCarrito()">Finalizar Venta en Sistema</button>
             <button class="btn-cancelar" onclick="document.getElementById('modal-carrito').style.display='none'">← Seguir buscando</button>
         </div>
     </div>
@@ -211,7 +176,6 @@
                 return;
             }
 
-            // 1. Agrupar la lista de productos por Categoría y Modelo
             const agrupados = productos.reduce((acc, p) => {
                 const nombreGrupo = `${p.categoria} - ${p.modelo}`;
                 if (!acc[nombreGrupo]) {
@@ -222,12 +186,10 @@
                 return acc;
             }, {});
 
-            // 2. Crear el HTML
             Object.keys(agrupados).forEach((llave, index) => {
                 const grupo = agrupados[llave];
                 const idPanel = `panel-${index}`;
 
-                // Botón Acordeón Principal
                 const btnGrupo = document.createElement('button');
                 btnGrupo.className = 'acordeon-btn';
                 btnGrupo.innerHTML = `
@@ -241,12 +203,10 @@
                     </div>
                 `;
 
-                // Panel Oculto
                 const panel = document.createElement('div');
                 panel.id = idPanel;
                 panel.className = 'acordeon-contenido';
 
-                // 3. Sub-agrupar las variantes de este modelo por COLOR
                 const agrupadoPorColor = grupo.variantes.reduce((accCol, p) => {
                     const colorName = (p.color || "Varios").toUpperCase();
                     if (!accCol[colorName]) accCol[colorName] = [];
@@ -254,15 +214,12 @@
                     return accCol;
                 }, {});
 
-                // 4. Dibujar los Colores y sus Tallas en Cuadrícula
                 Object.keys(agrupadoPorColor).forEach(colorKey => {
-                    // Título del Color
                     const divColor = document.createElement('div');
                     divColor.className = 'subtitulo-color';
                     divColor.innerText = `🎨 ${colorKey}`;
                     panel.appendChild(divColor);
 
-                    // Contenedor Grid (2 columnas) para las tallas
                     const gridTallas = document.createElement('div');
                     gridTallas.className = 'grid-tallas';
 
@@ -286,7 +243,6 @@
                     panel.appendChild(gridTallas);
                 });
 
-                // Lógica del acordeón
                 btnGrupo.onclick = function() {
                     this.classList.toggle("activo");
                     const flecha = this.querySelector('.flecha');
@@ -341,6 +297,29 @@
             document.getElementById('modal-carrito').style.display = 'flex';
         }
 
+        // NUEVA FUNCIÓN: Enviar mensaje estructurado por WhatsApp
+        function enviarWhatsApp() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío, agrega productos primero.");
+                return;
+            }
+
+            let mensaje = "¡Hola! Gracias por elegir a *Jack Medic* 👨‍⚕️👩‍⚕️\nEspecialistas en Uniformes Médicos.\n\n*Resumen de tu pedido:*\n";
+            let total = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.cantidad * item.precio;
+                total += subtotal;
+                mensaje += `▪️ ${item.cantidad}x ${item.modelo} (${item.talla} - ${item.color}) : S/ ${subtotal.toFixed(2)}\n`;
+            });
+
+            mensaje += `\n*Total a pagar: S/ ${total.toFixed(2)}*\n\nHacemos envíos *a nivel nacional*. ¡Quedamos atentos a tu confirmación!`;
+
+            // Codificamos el texto para que WhatsApp lo entienda y abrimos la app
+            const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
         async function despacharCarrito() {
             if (carrito.length === 0) return;
             const btn = document.getElementById('btn-confirmar');
@@ -362,7 +341,7 @@
             } catch(e) {
                 alert("Error al despachar.");
             } finally {
-                btn.innerText = "Finalizar Venta";
+                btn.innerText = "Finalizar Venta en Sistema";
             }
         }
 
