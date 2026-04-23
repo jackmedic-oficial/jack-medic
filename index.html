@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo | Jack Medic</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #E08B25; 
+            --bg: #f4f5f7;
+            --text: #333;
+            --danger: #D9534F;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 100px;
+        }
+
+        /* HEADER */
+        header { background: white; text-align: center; padding: 20px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;}
+        .header-title { font-size: 14px; letter-spacing: 2px; color: #777; font-weight: 600; text-transform: uppercase; }
+        .logo-img { height: 45px; object-fit: contain; margin: 8px 0; }
+        .header-sub { font-size: 11px; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* SEARCH & FILTERS */
+        .search-box { padding: 15px; }
+        input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; font-family: 'Montserrat'; box-sizing: border-box; outline: none; font-size: 14px; }
+        input:focus { border-color: var(--primary); }
+
+        .filtros { display: flex; gap: 10px; padding: 0 15px 10px; overflow-x: auto; scrollbar-width: none; }
+        .filtros::-webkit-scrollbar { display: none; }
+        .chip { padding: 8px 16px; border-radius: 20px; border: none; background: #eee; cursor: pointer; font-weight: 600; font-family: 'Montserrat'; font-size: 13px; white-space: nowrap; transition: 0.2s; color: #666; }
+        .chip.active { background: var(--primary); color: white; }
+
+        .titulo { text-align: center; font-size: 13px; color: #777; letter-spacing: 2px; margin: 10px 0 5px; font-weight: 700; }
+
+        /* CATÁLOGO */
+        main { max-width: 480px; margin: auto; padding: 10px; }
+        .card { background: white; border-radius: 12px; margin-bottom: 12px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .acordeon { font-weight: 700; padding: 10px; border-left: 4px solid var(--primary); cursor: pointer; display: flex; justify-content: space-between; font-size: 16px; }
+        .contenido { display: none; }
+        
+        .color { background: #f9f9f9; padding: 8px 10px; border-radius: 6px; margin-top: 10px; font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; border-left: 3px solid #ddd; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+        
+        .item { background: white; border: 1px solid #eee; border-radius: 8px; padding: 12px; cursor: pointer; position: relative; transition: 0.2s; }
+        .item.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .talla { font-weight: 800; color: var(--primary); font-size: 15px; }
+        .item.active .talla { color: white; }
+        .precio { font-size: 12px; font-weight: 600; margin-top: 2px; }
+        .stock { font-size: 11px; font-weight: 700; margin-top: 5px; opacity: 0.7; }
+        
+        /* CONTROLES DE CANTIDAD */
+        .qty { position: absolute; top: -5px; right: -5px; background: #333; color: white; font-size: 11px; padding: 4px 8px; border-radius: 50px; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .btn-restar { position: absolute; top: -6px; left: -6px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5; }
+        
+        .btn-stepper { background: #eee; border: none; border-radius: 6px; width: 32px; height: 32px; font-weight: bold; font-size: 18px; color: var(--text); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .btn-stepper:active { background: #ddd; }
+
+        /* MODAL CARRITO */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .btn-eliminar { background: #fee; color: var(--danger); border: none; border-radius: 6px; width: 30px; height: 30px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 18px; }
+        
+        .form-grupo { background: #fff9f2; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px solid #ffe8cc; }
+        .form-grupo label { font-size: 11px; font-weight: 800; color: var(--primary); display: block; margin-bottom: 12px; text-transform: uppercase; }
+        
+        .input-crm { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-family: 'Montserrat'; box-sizing: border-box; outline: none; font-size: 13px; background: white; }
+        .input-crm:focus { border-color: var(--primary); }
+
+        /* FOOTER */
+        footer { position: fixed; bottom: 0; width: 100%; max-width: 480px; left: 50%; transform: translateX(-50%); padding: 15px 20px; background: transparent; box-sizing: border-box; pointer-events: none; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 50px; background: var(--primary); color: white; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(224, 139, 37, 0.4); font-family: 'Montserrat'; pointer-events: auto; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-ws { background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); margin-top: 15px; }
+        
+        .loading { text-align: center; padding: 40px; color: #999; font-weight: 600; font-size: 14px; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-title">Uniformes Médicos</div>
+    <img src="tu-firma.png" alt="Jack Medic" class="logo-img">
+    <div class="header-sub">Ventas por mayor y menor a todo el Perú</div>
+</header>
+
+<main>
+    <div class="search-box" style="padding: 10px 0;">
+        <input type="text" id="buscador" placeholder="Buscar modelo, color o talla..." onkeyup="filtrar()">
+    </div>
+
+    <div class="filtros" id="contenedor-categorias">
+        </div>
+
+    <div class="titulo">NUESTROS MODELOS</div>
+    <div id="productos"><div class="loading">Cargando catálogo...</div></div>
+</main>
+
+<footer>
+    <button class="btn" onclick="abrirCarrito()">🛒 Ver Mi Pedido (<span id="count">0</span>)</button>
+</footer>
+
+<div class="modal-overlay" id="modal-carrito">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+            <h3 style="margin:0;">Tu Pedido</h3>
+            <button style="background:none; border:none; font-size:24px; color:#999; cursor:pointer;" onclick="cerrarCarrito()">&times;</button>
+        </div>
+        
+        <div id="lista-carrito"></div>
+        <div id="total-carrito" style="text-align:right; font-weight:800; font-size:20px; color:var(--text); margin: 15px 0;"></div>
+
+        <div class="form-grupo">
+            <label>Tus Datos para el Envío:</label>
+            <input type="text" id="cli-nombre" class="input-crm" placeholder="Tu nombre completo o Empresa">
+            <div style="display:flex; gap:8px;">
+                <input type="number" id="cli-telefono" class="input-crm" placeholder="Celular">
+                <input type="number" id="cli-dni" class="input-crm" placeholder="DNI o RUC">
+            </div>
+            <input type="text" id="cli-ciudad" class="input-crm" placeholder="Ciudad o Distrito">
+            <input type="text" id="cli-obs" class="input-crm" placeholder="Notas (Recojo o Envío)" style="margin-bottom:0;">
+        </div>
+
+        <button class="btn btn-ws" onclick="comprar()">Enviar Pedido por WhatsApp</button>
+    </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzP7lr_HxbBVt00fAgJohUN53cGc8fmfLv8pDEvcEk17-MyaTV3H8C0loxhX8Xp3d8lMg/exec";
+
+let data = [];
+let carrito = {}; 
+let categoriaActual = "Todos";
+
+async function cargar() {
+    try {
+        let r = await fetch(API);
+        let dataBruta = await r.json();
+        data = dataBruta.filter(p => p.sku && p.modelo && parseInt(p.stock) > 0);
+        
+        actualizarChips();
+        filtrar();
+    } catch(e) {
+        document.getElementById("productos").innerHTML = "<div class='loading'>Error al conectar. Verifica tu internet.</div>";
+    }
+}
+
+function actualizarChips() {
+    let contenedor = document.getElementById("contenedor-categorias");
+    let categorias = [...new Set(data.map(p => p.categoria))].filter(c => c && c.toString().trim() !== "");
+    
+    let html = `<button class="chip ${categoriaActual === 'Todos' ? 'active' : ''}" onclick="seleccionarCategoria('Todos')">Todos</button>`;
+    
+    categorias.forEach(cat => {
+        html += `<button class="chip ${categoriaActual === cat ? 'active' : ''}" onclick="seleccionarCategoria('${cat}')">${cat}</button>`;
+    });
+    
+    contenedor.innerHTML = html;
+}
+
+function seleccionarCategoria(cat) {
+    categoriaActual = cat;
+    actualizarChips();
+    filtrar();
+}
+
+function filtrar() {
+    let txt = document.getElementById("buscador").value.toLowerCase().trim();
+    
+    let filtrados = data.filter(p => {
+        let mod = p.modelo ? p.modelo.toString().toLowerCase() : "";
+        let col = p.color ? p.color.toString().toLowerCase() : "";
+        let tal = p.talla ? p.talla.toString().toLowerCase() : "";
+        
+        let matchTxt = mod.includes(txt) || col.includes(txt) || tal.includes(txt);
+        let matchCat = (categoriaActual === "Todos" || p.categoria === categoriaActual);
+        
+        return matchTxt && matchCat;
+    });
+    
+    let autoAbrir = (txt.length > 0);
+    render(filtrados, autoAbrir);
+}
+
+function render(lista, autoExpand = false) {
+    let contenedor = document.getElementById("productos");
+    contenedor.innerHTML = "";
+    
+    if(lista.length === 0) {
+        contenedor.innerHTML = "<div class='loading'>No se encontraron modelos.</div>";
+        return;
+    }
+
+    let agrupados = {};
+    lista.forEach(p => {
+        if (!agrupados[p.modelo]) agrupados[p.modelo] = {};
+        if (!agrupados[p.modelo][p.color]) agrupados[p.modelo][p.color] = [];
+        agrupados[p.modelo][p.color].push(p);
+    });
+
+    Object.keys(agrupados).forEach((modelo, i) => {
+        let displayMode = autoExpand ? "block" : "none";
+
+        let html = `<div class="card">
+            <div class="acordeon" onclick="toggle(${i})">
+                <span>${modelo}</span> <span style="color:#ccc; font-size:12px;">▼</span>
+            </div>
+            <div class="contenido" id="c${i}" style="display: ${displayMode};">`;
+
+        Object.keys(agrupados[modelo]).forEach(color => {
+            html += `<div class="color">🎨 ${color}</div><div class="grid">`;
+
+            agrupados[modelo][color].forEach(p => {
+                let id = `${p.modelo}-${p.talla}-${p.color}`;
+                let qtyEnCarrito = carrito[id] ? carrito[id].qty : 0;
+                let claseActiva = qtyEnCarrito > 0 ? "active" : "";
+                
+                let badgeHtml = qtyEnCarrito > 0 ? `<div class="qty">x${qtyEnCarrito}</div>` : "";
+                let btnRestarHtml = qtyEnCarrito > 0 ? `<div class="btn-restar" onclick="restar('${id}', event)">−</div>` : "";
+
+                html += `
+                <div id="${id}" class="item ${claseActiva}" onclick="agregar('${id}','${p.modelo}','${p.talla}','${p.color}',${p.precioVenta}, ${p.stock})">
+                    ${btnRestarHtml}
+                    <div class="talla">${p.talla}</div>
+                    <div class="precio">S/ ${parseFloat(p.precioVenta).toFixed(2)}</div>
+                    <div class="stock">Disp: ${p.stock}</div>
+                    ${badgeHtml}
+                </div>`;
+            });
+            html += `</div>`;
+        });
+
+        html += `</div></div>`;
+        contenedor.innerHTML += html;
+    });
+}
+
+function toggle(i) {
+    let el = document.getElementById("c"+i);
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+/* LÓGICA DE CANTIDADES */
+function agregar(id, m, t, c, p, maxStock) {
+    if (!carrito[id]) {
+        carrito[id] = { m, t, c, p, maxStock, qty: 0 };
+    }
+
+    if (carrito[id].qty >= maxStock) {
+        alert(`¡Lo sentimos! Solo tenemos ${maxStock} unidades disponibles en este momento.`);
+        return;
+    }
+
+    carrito[id].qty++;
+    actualizarUI(id);
+}
+
+function sumarItem(id, e) {
+    if (e) e.stopPropagation();
+    if (carrito[id]) {
+        if (carrito[id].qty >= carrito[id].maxStock) {
+            alert(`¡Lo sentimos! Solo tenemos ${carrito[id].maxStock} unidades disponibles.`);
+            return;
+        }
+        carrito[id].qty++;
+        actualizarUI(id);
+        if (document.getElementById("modal-carrito").style.display === "flex") {
+            abrirCarrito();
+        }
+    }
+}
+
+function restar(id, e) {
+    if (e) e.stopPropagation();
+    if (carrito[id]) {
+        carrito[id].qty--;
+        if (carrito[id].qty <= 0) {
+            delete carrito[id];
+        }
+        actualizarUI(id);
+        if (document.getElementById("modal-carrito").style.display === "flex") {
+            abrirCarrito();
+        }
+    }
+}
+
+function quitar(id) {
+    if (carrito[id]) {
+        delete carrito[id];
+        actualizarUI(id); 
+        abrirCarrito(); 
+    }
+}
+
+function actualizarUI(id) {
+    let totalItems = 0;
+    Object.values(carrito).forEach(i => totalItems += i.qty);
+    document.getElementById("count").innerText = totalItems;
+
+    let el = document.getElementById(id);
+    if(el) {
+        if(carrito[id] && carrito[id].qty > 0) {
+            el.classList.add("active");
+            
+            let badge = el.querySelector(".qty");
+            if(!badge) {
+                badge = document.createElement("div");
+                badge.className = "qty";
+                el.appendChild(badge);
+            }
+            badge.innerText = "x" + carrito[id].qty;
+
+            let btnRestar = el.querySelector(".btn-restar");
+            if(!btnRestar) {
+                btnRestar = document.createElement("div");
+                btnRestar.className = "btn-restar";
+                btnRestar.innerHTML = "−";
+                btnRestar.onclick = function(e) { restar(id, e); };
+                el.insertBefore(btnRestar, el.firstChild);
+            }
+
+        } else {
+            el.classList.remove("active");
+            let badge = el.querySelector(".qty");
+            if(badge) badge.remove();
+            let btnRestar = el.querySelector(".btn-restar");
+            if(btnRestar) btnRestar.remove();
+        }
+    }
+}
+
+/* --- LOGICA DEL MODAL --- */
+function abrirCarrito() {
+    let items = Object.values(carrito);
+    let lista = document.getElementById("lista-carrito");
+    
+    if (items.length === 0) {
+        lista.innerHTML = "<div style='text-align:center; color:#999; padding:20px 0;'>Tu carrito está vacío.</div>";
+        document.getElementById("total-carrito").innerText = "Total: S/ 0.00";
+    } else {
+        let total = 0;
+        let html = "";
+        Object.keys(carrito).forEach(id => {
+            let i = carrito[id];
+            let subtotal = i.p * i.qty;
+            total += subtotal;
+            html += `
+            <div class="item-carrito">
+                <div style="flex-grow:1">
+                    <div style="font-weight:800; color:var(--primary); font-size:15px;">${i.m} (${i.t})</div>
+                    <small style="color:#666">${i.c} - S/ ${i.p.toFixed(2)} c/u</small>
+                    
+                    <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+                        <button class="btn-stepper" onclick="restar('${id}', event)">−</button>
+                        <span style="font-weight:800; font-size:15px; width:20px; text-align:center;">${i.qty}</span>
+                        <button class="btn-stepper" onclick="sumarItem('${id}', event)">+</button>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+                    <button class="btn-eliminar" onclick="quitar('${id}')" title="Quitar producto">&times;</button>
+                    <b style="font-size:15px; color:var(--text);">S/ ${subtotal.toFixed(2)}</b>
+                </div>
+            </div>`;
+        });
+        lista.innerHTML = html;
+        document.getElementById("total-carrito").innerText = `Total: S/ ${total.toFixed(2)}`;
+    }
+    
+    document.getElementById("modal-carrito").style.display = "flex";
+}
+
+function cerrarCarrito() {
+    document.getElementById("modal-carrito").style.display = "none";
+}
+
+async function comprar() {
+    let items = Object.values(carrito);
+    if (items.length === 0) return alert("Agrega al menos un producto a tu pedido.");
+
+    let nombre = document.getElementById("cli-nombre").value.trim();
+    let telefono = document.getElementById("cli-telefono").value.trim();
+    let dni = document.getElementById("cli-dni").value.trim();
+    let ciudad = document.getElementById("cli-ciudad").value.trim();
+    let obs = document.getElementById("cli-obs").value.trim();
+
+    if (!nombre || !telefono || !ciudad) {
+        return alert("Por favor, completa tu Nombre, Celular y Ciudad/Distrito para procesar el envío.");
+    }
+
+    let btn = document.querySelector(".btn-ws");
+    btn.innerText = "Procesando...";
+
+    let total = 0;
+    let msg = `Hola Jack Medic, quiero hacer un pedido:\n\n*📦 DATOS DE ENVÍO:*\n👤 Nombre/Empresa: ${nombre}\n📱 Celular: ${telefono}\n🪪 DNI/RUC: ${dni || "No indicado"}\n📍 Ciudad/Distrito: ${ciudad}\n🏢 Notas/Envío: ${obs || "Ninguna"}\n\n*🛍️ MI PEDIDO:*\n`;
+
+    items.forEach(i => {
+        msg += `▪️ ${i.qty}x ${i.m} (${i.t} - ${i.c})\n`;
+        total += i.p * i.qty;
+    });
+
+    msg += `\n*Total estimado: S/ ${total.toFixed(2)}*`;
+
+    let infoCompleta = `${nombre} | ${telefono} | ${dni} | ${ciudad} | ${obs}`;
+
+    try {
+        await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ 
+                nombre: nombre, 
+                telefono: telefono, 
+                dni: dni,
+                ciudad: ciudad,
+                obs: obs,
+                cliente: infoCompleta,
+                pedido: items, 
+                total: total 
+            })
+        });
+    } catch(e) { console.log("Abriendo WhatsApp..."); }
+
+    window.open(`https://wa.me/51941024757?text=${encodeURIComponent(msg)}`);
+    cerrarCarrito();
+    btn.innerText = "Enviar Pedido por WhatsApp";
+}
+
+window.onload = cargar;
+</script>
+
+</body>
+</html>
