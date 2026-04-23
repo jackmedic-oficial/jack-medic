@@ -6,276 +6,226 @@
     <title>Panel Admin | Jack Medic</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
-
-        :root { 
-            --primary: #E08B25; 
-            --bg: #F8F9FA; 
-            --text: #333333; 
-            --card-bg: #FFFFFF; 
-            --grey-text: #666666;
-            --whatsapp: #25D366;
-            --danger: #D9534F;
-            --dark: #333333;
-        }
-
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 90px; }
-
-        header { width: 100%; background-color: var(--card-bg); padding: 10px 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; text-align: center; }
-        .marca-completa { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 8px; }
-        .linea1-texto { font-size: 14px; font-weight: 600; letter-spacing: 2px; color: var(--grey-text); text-transform: uppercase; }
-        .logo-firma-img { height: 35px; object-fit: contain; }
-        .linea3-texto { font-size: 11px; font-weight: 400; letter-spacing: 0.5px; color: var(--primary); }
-        .controles-sede { display: flex; justify-content: center; width: 100%; }
-        .selector-sede { background-color: transparent; color: var(--text); border: 1px solid #ddd; font-family: 'Montserrat', sans-serif; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; outline: none; cursor: pointer; }
+        :root { --primary: #E08B25; --bg: #F8F9FA; --text: #333333; --card-bg: #FFFFFF; --whatsapp: #25D366; --dark: #333333; --danger: #D9534F; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 90px; display: flex; flex-direction: column; align-items: center; }
+        
+        header { width: 100%; background: var(--card-bg); padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; position: sticky; top: 0; z-index: 100; }
+        .h-top { font-size: 14px; font-weight: 600; letter-spacing: 3px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .logo-img { height: 40px; margin: 5px 0; }
+        .h-bottom { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
 
         main { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .btn-caja { width: 100%; background: var(--dark); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-bottom: 15px; font-family: 'Montserrat'; }
+        .barra-busqueda { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-family: 'Montserrat'; outline: none; }
         
-        .btn-caja-dia { width: 100%; background: var(--dark); color: white; border: none; padding: 14px; border-radius: 8px; margin-bottom: 15px; font-weight: 700; font-family: 'Montserrat', sans-serif; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-
-        .barra-busqueda { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+        .acordeon-btn { background: white; cursor: pointer; padding: 15px; width: 100%; border: none; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); display: flex; justify-content: space-between; font-weight: 700; border-left: 4px solid var(--primary); font-family: 'Montserrat'; }
+        .acordeon-contenido { display: none; padding: 5px 15px 15px 15px; background: white; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid var(--primary); }
         
-        .filtros-categoria { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
-        .chip-cat { background: #eee; color: var(--grey-text); border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Montserrat', sans-serif; }
-        .chip-cat.activo { background: var(--primary); color: white; }
-
-        .acordeon-btn { background-color: var(--card-bg); color: var(--text); cursor: pointer; padding: 15px 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 16px; font-weight: 700; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); font-family: 'Montserrat', sans-serif; }
-        .acordeon-btn.activo { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; border-bottom: 1px solid #eee; background-color: #fafafa; }
-        .acordeon-contenido { padding: 5px 15px 15px 15px; display: none; background-color: var(--card-bg); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); border-left: 4px solid var(--primary); }
-
-        .subtitulo-color { background-color: #f5f5f5; color: var(--grey-text); font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 4px; margin: 15px 0 8px 0; text-transform: uppercase; border-left: 3px solid #ccc; }
+        .bloque-color { margin-top: 10px; }
+        .titulo-color { background-color: #f5f5f5; color: #666; font-size: 11px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; border-left: 3px solid #ccc; }
+        
+        /* AQUÍ ESTÁ LA MAGIA QUE RESTAURA TUS BOTONES */
         .grid-tallas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .item-talla { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .item-talla { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .item-talla.sin-stock { opacity: 0.5; cursor: not-allowed; background: #f9f9f9; }
+        .item-talla:not(.sin-stock):active { background: #fef4e8; }
         
-        .talla-nombre { font-size: 15px; font-weight: 700; color: var(--primary); display: block;}
-        .talla-stock { font-size: 14px; font-weight: 700; color: var(--text); }
+        .info-precio { font-size: 13px; font-weight: 700; color: var(--text); }
+        .info-stock { font-size: 13px; font-weight: 700; color: var(--primary); }
+        .info-stock.agotado { color: var(--danger); }
 
-        .controles-flotantes { position: fixed; bottom: 20px; width: 100%; max-width: 480px; display: flex; justify-content: center; padding: 0 20px; box-sizing: border-box; z-index: 1000; pointer-events: none; }
-        .btn-flotante { pointer-events: auto; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 50px; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; box-shadow: 0 4px 15px rgba(224, 139, 37, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .badge-carrito { background: white; color: var(--primary); font-size: 14px; padding: 2px 10px; border-radius: 20px; font-weight: 700; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 12px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 420px; border-radius: 16px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        /* NUEVO ESTILO: Input para el Almacenero */
-        .input-cliente { width: 100%; padding: 12px; border: 2px solid var(--primary); border-radius: 8px; margin: 10px 0 20px 0; font-family: 'Montserrat', sans-serif; box-sizing: border-box; font-size: 14px; outline: none; }
-
-        .btn-accion { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: 700; font-size: 16px; cursor: pointer; }
-        .btn-whatsapp { background: var(--whatsapp); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-cancelar { background: transparent; color: #999; border: none; padding: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 5px; }
+        .seccion-cliente { background: #fff9f2; padding: 15px; border-radius: 10px; border: 1px solid #ffe8cc; margin: 15px 0; }
+        .input-crm { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px; font-family: 'Montserrat'; box-sizing: border-box; outline: none; font-size: 13px; }
+        .input-crm:focus { border-color: var(--primary); }
         
-        .item-carrito { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-        .total-carrito { font-size: 20px; font-weight: 700; text-align: right; margin-top: 15px; color: var(--text); margin-bottom: 15px; }
-        .loading { text-align: center; padding: 50px; color: #999; }
+        .item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+        .btn-eliminar { background: none; border: none; color: var(--danger); font-size: 20px; cursor: pointer; font-weight: bold; }
+
+        .btn-accion { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Montserrat'; margin-top: 10px; }
+        .btn-flotante { position: fixed; bottom: 20px; width: 90%; max-width: 440px; background: var(--primary); color: white; border: none; border-radius: 50px; padding: 15px; font-weight: 700; box-shadow: 0 4px 15px rgba(224,139,37,0.4); cursor: pointer; font-family: 'Montserrat'; z-index: 1000; }
+        .badge { background: white; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 5px; }
     </style>
 </head>
 <body>
-
     <header>
-        <div class="marca-completa">
-            <span class="linea1-texto">Panel Administrador</span>
-            <img src="tu-firma.png" alt="Jack Medic" class="logo-firma-img">
-            <span class="linea3-texto">Gestión Interna de Inventario</span>
-        </div>
-        <div class="controles-sede">
-            <select id="filtro-sede" class="selector-sede" onchange="filtrarInventario()">
-                <option value="Todas">Todas las Sedes</option>
-            </select>
-        </div>
+        <div class="h-top">Uniformes Médicos</div>
+        <img src="tu-firma.png" class="logo-img">
+        <div class="h-bottom">Ventas por mayor y menor a todo el Perú</div>
     </header>
 
     <main>
-        <button class="btn-caja-dia" onclick="verResumenHoy()">
-            📊 Ver Resumen de Caja (Hoy)
-        </button>
-
-        <input type="text" id="buscador" class="barra-busqueda" placeholder="Buscar SKU, Modelo o Color..." onkeyup="filtrarInventario()">
-        <div class="filtros-categoria" id="contenedor-categorias"></div>
-        <div id="contenedor-productos"><div class="loading">Sincronizando inventario...</div></div>
+        <button class="btn-caja" onclick="verResumenHoy()">📊 Reporte de Ventas (Hoy)</button>
+        <input type="text" id="buscador" class="barra-busqueda" placeholder="Buscar modelo o color..." onkeyup="filtrarInventario()">
+        <div id="contenedor-productos"></div>
     </main>
 
-    <div class="controles-flotantes">
-        <button class="btn-flotante" onclick="abrirCarrito()">
-            🛒 Confirmar Despacho <span id="contador-carrito" class="badge-carrito">0</span>
-        </button>
-    </div>
+    <button class="btn-flotante" onclick="abrirCarrito()">🛒 Finalizar Despacho <span id="count" class="badge">0</span></button>
 
     <div class="modal-overlay" id="modal-carrito">
         <div class="modal-content">
-            <h3 style="margin-top:0">Confirmar Salida</h3>
-            <div id="lista-carrito">Sin productos seleccionados.</div>
-            <div class="total-carrito" id="total-carrito">Total: S/ 0.00</div>
+            <h3 style="margin-top:0; color:var(--dark)">Confirmar Pedido</h3>
+            <div id="lista-carrito"></div>
+            <div id="total-carrito" style="text-align:right; font-weight:800; color:var(--primary); font-size:22px; margin: 15px 0;"></div>
             
-            <label style="font-size:12px; font-weight:700; color:var(--primary)">DESTINATARIO / AGENCIA / CLIENTE:</label>
-            <input type="text" id="input-cliente" class="input-cliente" placeholder="Ej: Juan Perez - Shalom Chiclayo">
+            <div class="seccion-cliente">
+                <label style="font-size:11px; font-weight:800; color:var(--primary); display:block; margin-bottom:10px;">INGRESAR DATOS DEL CLIENTE:</label>
+                <input type="text" id="cli-nombre" class="input-crm" placeholder="Nombre completo o Empresa">
+                <input type="text" id="cli-ciudad" class="input-crm" placeholder="Ciudad o Distrito">
+                <div style="display:flex; gap:8px;">
+                    <input type="number" id="cli-celular" class="input-crm" placeholder="Celular">
+                    <input type="number" id="cli-dni" class="input-crm" placeholder="DNI o RUC">
+                </div>
+                <input type="text" id="cli-obs" class="input-crm" placeholder="Observaciones (Ej: Recojo o Envío)">
+            </div>
 
-            <button class="btn-accion" id="btn-confirmar" onclick="despacharCarrito()">Finalizar Venta (Excel)</button>
-            
-            <button class="btn-whatsapp" onclick="enviarWhatsApp()">
-                📱 Enviar Voucher WhatsApp
-            </button>
-            
-            <button class="btn-cancelar" onclick="document.getElementById('modal-carrito').style.display='none'">← Seguir agregando</button>
+            <button class="btn-accion" id="btn-confirmar" onclick="despacharCarrito()">✅ Registrar Venta en Excel</button>
+            <button style="width:100%; background:none; border:none; color:#bbb; margin-top:15px; cursor:pointer; font-weight:600; font-size:12px;" onclick="document.getElementById('modal-carrito').style.display='none'">← SEGUIR AGREGANDO</button>
         </div>
     </div>
 
     <script>
-        const URL_API = "https://script.google.com/macros/s/AKfycbww9BXgooe2MYQe3wXR4fxmTfyKr3lkVtLgDXfWD-zS248ZIWDfVqIUuE4sbBCjLCAYUA/exec"; 
-
-        let inventarioGlobal = [];
-        let carrito = []; 
-        let categoriaSeleccionada = "Todas";
+        // Recuerda colocar tu URL de Apps Script aquí
+        const URL_API = "https://script.google.com/macros/s/AKfycbzP7lr_HxbBVt00fAgJohUN53cGc8fmfLv8pDEvcEk17-MyaTV3H8C0loxhX8Xp3d8lMg/exec"; 
+        let inventarioGlobal = []; let carrito = [];
 
         async function cargarInventario() {
             try {
-                const response = await fetch(URL_API);
-                inventarioGlobal = await response.json();
-                actualizarFiltroSedes();
-                actualizarFiltroCategorias();
+                const res = await fetch(URL_API);
+                const data = await res.json();
+                inventarioGlobal = data.filter(p => p.sku && p.sku.toString().trim() !== "" && p.modelo);
                 filtrarInventario();
-            } catch (error) {
-                document.getElementById('contenedor-productos').innerHTML = "<div style='text-align:center;'>Error de conexión.</div>";
+            } catch(e) { console.error("Error cargando inventario"); }
+        }
+
+        function filtrarInventario() {
+            const txt = document.getElementById('buscador').value.toLowerCase();
+            const filtrados = inventarioGlobal.filter(p => 
+                p.modelo.toLowerCase().includes(txt) || (p.color && p.color.toLowerCase().includes(txt))
+            );
+            renderizar(filtrados);
+        }
+
+        function renderizar(productos) {
+            const cont = document.getElementById('contenedor-productos');
+            cont.innerHTML = '';
+            
+            const agrupadosModelo = productos.reduce((acc, p) => {
+                if (!acc[p.modelo]) acc[p.modelo] = [];
+                acc[p.modelo].push(p);
+                return acc;
+            }, {});
+
+            Object.keys(agrupadosModelo).forEach(modelo => {
+                const btnMod = document.createElement('button');
+                btnMod.className = 'acordeon-btn';
+                btnMod.innerHTML = `<span>${modelo}</span><span>▼</span>`;
+                
+                const panelMod = document.createElement('div');
+                panelMod.className = 'acordeon-contenido';
+                
+                const agrupadosColor = agrupadosModelo[modelo].reduce((accC, p) => {
+                    const color = p.color || "Varios";
+                    if (!accC[color]) accC[color] = [];
+                    accC[color].push(p);
+                    return accC;
+                }, {});
+
+                Object.keys(agrupadosColor).forEach(color => {
+                    const bloque = document.createElement('div');
+                    bloque.className = 'bloque-color';
+                    bloque.innerHTML = `<div class="titulo-color">🎨 ${color}</div>`;
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'grid-tallas';
+                    
+                    agrupadosColor[color].forEach(p => {
+                        const item = document.createElement('div');
+                        const agotado = (parseInt(p.stock) <= 0);
+                        item.className = `item-talla ${agotado ? 'sin-stock' : ''}`;
+                        item.innerHTML = `
+                            <div class="info-precio">
+                                <span style="color:var(--primary); font-weight:800;">${p.talla}</span><br>
+                                <small>S/ ${parseFloat(p.precioVenta || 0).toFixed(2)}</small>
+                            </div>
+                            <div class="info-stock ${agotado ? 'agotado' : ''}">${p.stock} und.</div>
+                        `;
+                        if(!agotado) {
+                            item.onclick = () => {
+                                const q = prompt(`¿Cantidad para ${p.modelo} (${p.talla} - ${color})?\nStock: ${p.stock}`);
+                                if(q > 0) {
+                                    if(parseInt(q) > p.stock) { alert("Error: Stock insuficiente"); return; }
+                                    carrito.push({...p, cantidad: parseInt(q), colorElegido: color});
+                                    document.getElementById('count').innerText = carrito.length;
+                                }
+                            };
+                        }
+                        grid.appendChild(item);
+                    });
+                    bloque.appendChild(grid);
+                    panelMod.appendChild(bloque);
+                });
+
+                btnMod.onclick = () => panelMod.style.display = panelMod.style.display === 'block' ? 'none' : 'block';
+                cont.appendChild(btnMod);
+                cont.appendChild(panelMod);
+            });
+        }
+
+        function abrirCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            let t = 0; lista.innerHTML = '';
+            if(carrito.length === 0) {
+                lista.innerHTML = "<center style='color:#999; padding:20px;'>Carrito vacío</center>";
+            } else {
+                carrito.forEach((i, idx) => {
+                    const sub = i.cantidad * i.precioVenta;
+                    t += sub;
+                    lista.innerHTML += `<div class="item-carrito">
+                        <div><strong>${i.cantidad}x</strong> ${i.modelo} (${i.talla})<br><small>${i.colorElegido}</small></div>
+                        <div style="display:flex; align-items:center; gap:10px">
+                            <b>S/ ${sub.toFixed(2)}</b>
+                            <button class="btn-eliminar" onclick="eliminarItem(${idx})">&times;</button>
+                        </div>
+                    </div>`;
+                });
             }
+            document.getElementById('total-carrito').innerText = `Total: S/ ${t.toFixed(2)}`;
+            document.getElementById('modal-carrito').style.display = 'flex';
+        }
+
+        function eliminarItem(idx) {
+            carrito.splice(idx, 1);
+            document.getElementById('count').innerText = carrito.length;
+            abrirCarrito();
+        }
+
+        async function despacharCarrito() {
+            const nom = document.getElementById('cli-nombre').value;
+            if(!nom) return alert("Ingresa el nombre del cliente.");
+            const btn = document.getElementById('btn-confirmar');
+            btn.innerText = "Registrando...";
+            
+            const info = `${nom} | ${document.getElementById('cli-celular').value} | ${document.getElementById('cli-dni').value} | ${document.getElementById('cli-ciudad').value} | ${document.getElementById('cli-obs').value}`;
+            
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "vender_lote", carrito: carrito, cliente: info })
+                });
+                alert("¡Éxito! Stock y CRM actualizados.");
+                location.reload();
+            } catch(e) { alert("Error de conexión"); btn.innerText = "✅ Registrar Venta en Excel"; }
         }
 
         async function verResumenHoy() {
             try {
                 const res = await fetch(URL_API + "?action=resumen_hoy");
                 const data = await res.json();
-                let detalleTxt = "";
-                for (let mod in data.detalle) { detalleTxt += `\n▪️ ${mod}: ${data.detalle[mod]} und.`; }
-                const mensaje = data.prendas === 0 ? "Sin ventas hoy." : `📊 VENTAS DE HOY\n\nTotal: S/ ${data.soles}\nUnidades: ${data.prendas}\n\n* Detalle *${detalleTxt}`;
-                alert(mensaje);
-            } catch(e) { alert("Error al cargar reporte."); }
-        }
-
-        function actualizarFiltroSedes() {
-            const selector = document.getElementById('filtro-sede');
-            const sedesUnicas = [...new Set(inventarioGlobal.map(p => p.sede).filter(s => s))];
-            selector.innerHTML = '<option value="Todas">Todas las Sedes</option>';
-            sedesUnicas.forEach(sede => selector.innerHTML += `<option value="${sede}">${sede}</option>`);
-        }
-
-        function actualizarFiltroCategorias() {
-            const contenedor = document.getElementById('contenedor-categorias');
-            const categoriasUnicas = [...new Set(inventarioGlobal.map(p => p.categoria).filter(c => c))];
-            let html = `<button class="chip-cat ${categoriaSeleccionada === 'Todas' ? 'activo' : ''}" onclick="seleccionarCategoria('Todas')">Todas</button>`;
-            categoriasUnicas.forEach(cat => {
-                html += `<button class="chip-cat ${categoriaSeleccionada === cat ? 'activo' : ''}" onclick="seleccionarCategoria('${cat}')">${cat}</button>`;
-            });
-            contenedor.innerHTML = html;
-        }
-
-        function seleccionarCategoria(cat) {
-            categoriaSeleccionada = cat;
-            actualizarFiltroCategorias();
-            filtrarInventario();
-        }
-
-        function filtrarInventario() {
-            const txt = document.getElementById('buscador').value.toLowerCase();
-            const sede = document.getElementById('filtro-sede').value;
-            const filtrados = inventarioGlobal.filter(p => {
-                if(!p.sku || !p.modelo) return false;
-                const matchSede = (sede === "Todas" || p.sede === sede);
-                const matchCat = (categoriaSeleccionada === "Todas" || p.categoria === categoriaSeleccionada);
-                const matchTxt = (p.modelo.toLowerCase().includes(txt) || p.sku.toLowerCase().includes(txt) || p.color.toLowerCase().includes(txt) || String(p.talla).toLowerCase().includes(txt));
-                return matchSede && matchCat && matchTxt;
-            });
-            renderizarProductos(filtrados);
-        }
-
-        function renderizarProductos(productos) {
-            const contenedor = document.getElementById('contenedor-productos');
-            contenedor.innerHTML = '';
-            const agrupados = productos.reduce((acc, p) => {
-                const nombreGrupo = `${p.categoria} - ${p.modelo}`;
-                if (!acc[nombreGrupo]) acc[nombreGrupo] = { categoria: p.categoria, modelo: p.modelo, stock: 0, variantes: [] };
-                acc[nombreGrupo].variantes.push(p);
-                acc[nombreGrupo].stock += (parseInt(p.stock) || 0);
-                return acc;
-            }, {});
-
-            Object.keys(agrupados).forEach((llave, index) => {
-                const grupo = agrupados[llave];
-                const btn = document.createElement('button');
-                btn.className = 'acordeon-btn';
-                btn.innerHTML = `<div><span style="font-size:10px; color:var(--primary); text-transform:uppercase;">${grupo.categoria}</span><br>${grupo.modelo}</div><div style="text-align:right;"><span style="font-size:14px; font-weight:600;">Total: ${grupo.stock}</span><br><span style="font-size:10px; color:#ccc;">▼ Detalles</span></div>`;
-                const panel = document.createElement('div');
-                panel.className = 'acordeon-contenido';
-                const porColor = grupo.variantes.reduce((accC, p) => {
-                    const c = (p.color || "Varios").toUpperCase();
-                    if (!accC[c]) accC[c] = [];
-                    accC[c].push(p);
-                    return accC;
-                }, {});
-                Object.keys(porColor).forEach(color => {
-                    const divC = document.createElement('div');
-                    divC.className = 'subtitulo-color';
-                    divC.innerText = `🎨 ${color}`;
-                    panel.appendChild(divC);
-                    const grid = document.createElement('div');
-                    grid.className = 'grid-tallas';
-                    porColor[color].forEach(p => {
-                        const item = document.createElement('div');
-                        item.className = 'item-talla';
-                        item.onclick = () => preguntarCantidad(p);
-                        item.innerHTML = `<div><span class="talla-nombre">${p.talla}</span><span style="display:block; font-size: 11px; color: var(--grey-text); font-weight: 700;">S/ ${parseFloat(p.precioVenta).toFixed(2)}</span></div><div style="text-align:right;"><span class="talla-stock" style="${p.stock <= p.stockMinimo ? 'color:var(--danger);' : ''}">${p.stock}</span><br><span class="talla-disp">disp.</span></div>`;
-                        grid.appendChild(item);
-                    });
-                    panel.appendChild(grid);
-                });
-                btn.onclick = () => panel.style.display = (panel.style.display === "block") ? "none" : "block";
-                contenedor.appendChild(btn);
-                contenedor.appendChild(panel);
-            });
-        }
-
-        function preguntarCantidad(p) {
-            const qty = prompt(`¿Venta de ${p.modelo} (${p.talla})?\nStock: ${p.stock}`);
-            if (qty > 0) {
-                if (parseInt(qty) > p.stock) { alert("Stock insuficiente."); return; }
-                carrito.push({ sku: p.sku, sede: p.sede, modelo: p.modelo, talla: p.talla, color: p.color, cantidad: parseInt(qty), precio: parseFloat(p.precioVenta) || 0 });
-                document.getElementById('contador-carrito').innerText = carrito.length;
-            }
-        }
-
-        function abrirCarrito() {
-            const lista = document.getElementById('lista-carrito');
-            let html = ''; let total = 0;
-            carrito.forEach(i => {
-                const sub = i.cantidad * i.precio; total += sub;
-                html += `<div class="item-carrito"><span><strong>${i.cantidad}x</strong> ${i.modelo}</span><span>S/ ${sub.toFixed(2)}</span></div>`;
-            });
-            lista.innerHTML = html || "Carrito vacío.";
-            document.getElementById('total-carrito').innerText = `Total: S/ ${total.toFixed(2)}`;
-            document.getElementById('modal-carrito').style.display = 'flex';
-        }
-
-        async function despacharCarrito() {
-            if (carrito.length === 0) return;
-            const cliente = document.getElementById('input-cliente').value;
-            if (!cliente) { alert("Escribe el nombre del cliente o la agencia para el almacenero."); return; }
-            
-            const btn = document.getElementById('btn-confirmar');
-            btn.innerText = "Procesando...";
-            try {
-                await fetch(URL_API, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "vender_lote", carrito: carrito, cliente: cliente })
-                });
-                alert("¡Despacho registrado para " + cliente + "!");
-                carrito = [];
-                location.reload();
-            } catch(e) { alert("Error al conectar."); btn.innerText = "Finalizar Venta (Excel)"; }
-        }
-
-        function enviarWhatsApp() {
-            if (carrito.length === 0) return;
-            let msg = "*Jack Medic - Voucher*\n\n";
-            let total = 0;
-            carrito.forEach(i => { total += (i.cantidad * i.precio); msg += `▪️ ${i.cantidad}x ${i.modelo} (${i.talla}): S/ ${(i.cantidad * i.precio).toFixed(2)}\n`; });
-            msg += `\n*Total: S/ ${total.toFixed(2)}*`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                alert(`REPORTE JACK MEDIC - HOY\n💰 S/ ${data.soles}\n📦 ${data.prendas} Unidades vendidas`);
+            } catch(e) { alert("Error cargando reporte"); }
         }
 
         window.onload = cargarInventario;
