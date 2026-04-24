@@ -27,14 +27,14 @@
         header { 
             background: white; 
             text-align: center; 
-            padding: 8px 5px; /* Ligeramente ajustado para respirar mejor */
+            padding: 8px 5px; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.06); 
             position: sticky; 
             top: 0; 
             z-index: 100;
         }
         .header-title { 
-            font-size: 13px; /* Aumentado de 10px a 13px */
+            font-size: 13px; 
             letter-spacing: 2px; 
             color: #777; 
             font-weight: 800; 
@@ -48,7 +48,7 @@
             margin: 4px 0; 
         }
         .header-sub { 
-            font-size: 11px; /* Aumentado de 9px a 11px */
+            font-size: 11px; 
             color: var(--primary); 
             font-weight: 800; 
             text-transform: uppercase; 
@@ -250,7 +250,9 @@ function render(lista, autoExpand = false) {
             <div class="contenido" id="c${i}" style="display: ${displayMode};">`;
 
         Object.keys(agrupados[modelo]).forEach(color => {
-            html += `<div class="color">🎨 ${color}</div><div class="grid">`;
+            
+            // AQUÍ ESTÁ EL CAMBIO: Ahora dice "MODELO - COLOR"
+            html += `<div class="color">🎨 ${modelo} - ${color}</div><div class="grid">`;
 
             agrupados[modelo][color].forEach(p => {
                 let id = `${p.modelo}-${p.talla}-${p.color}`;
@@ -283,9 +285,22 @@ function render(lista, autoExpand = false) {
     });
 }
 
+// AQUÍ ESTÁ EL CAMBIO: Función toggle inteligente (Acordeón único)
 function toggle(i) {
     let el = document.getElementById("c"+i);
-    el.style.display = el.style.display === "block" ? "none" : "block";
+    let isCurrentlyOpen = (el.style.display === "block");
+
+    // Primero, cerramos TODOS los contenidos que estén abiertos
+    let todosLosContenidos = document.querySelectorAll('.contenido');
+    todosLosContenidos.forEach(c => {
+        c.style.display = "none";
+    });
+
+    // Luego, si el que tocamos NO estaba abierto, lo abrimos. 
+    // (Si ya estaba abierto, se quedará cerrado, lo cual es el comportamiento correcto de un acordeón)
+    if (!isCurrentlyOpen) {
+        el.style.display = "block";
+    }
 }
 
 function clickItemPrincipal(id, m, t, c, p, maxStock) {
