@@ -78,19 +78,19 @@
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; padding: 4px 0; }
         
-        .item { background: white; border: 1.5px solid #eee; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
-        .item.active { border-color: var(--primary); background: #fffdf9; box-shadow: 0 4px 10px rgba(224, 139, 37, 0.15); }
+        /* DISEÑO DE TARJETA CON BOTONES FLOTANTES */
+        .item { background: white; border: 1.5px solid #eee; border-radius: 10px; padding: 15px 12px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; position: relative; transition: 0.2s; }
+        .item.active { border-color: var(--primary); background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(224, 139, 37, 0.3); }
         
         .talla { font-weight: 800; color: var(--primary); font-size: 18px; line-height: 1; }
-        .precio { font-size: 14px; font-weight: 700; margin-top: 6px; color: #333; }
-        .stock { font-size: 11px; font-weight: 700; margin-top: 4px; color: #888; }
+        .item.active .talla { color: white; }
+        .precio { font-size: 14px; font-weight: 700; margin-top: 6px; }
+        .stock { font-size: 12px; font-weight: 700; margin-top: 4px; opacity: 0.8; }
         
-        .controles-item { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 50px; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee; }
-        .btn-control { width: 34px; height: 34px; border-radius: 50%; border: none; font-size: 22px; font-weight: bold; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
-        .btn-control:active { transform: scale(0.9); }
-        .btn-control.minus { background: var(--danger); }
-        .btn-control.plus { background: var(--primary); }
-        .lbl-qty { font-size: 16px; font-weight: 800; color: var(--text); width: 24px; text-align: center; }
+        /* BURBUJAS FLOTANTES DE CANTIDAD Y RESTAR */
+        .qty { position: absolute; top: -10px; right: -10px; background: #333; color: white; font-size: 13px; min-width: 20px; height: 24px; display: flex; justify-content: center; align-items: center; padding: 0 8px; border-radius: 50px; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 5; }
+        .btn-restar { position: absolute; top: -12px; left: -12px; background: var(--danger); color: white; border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; cursor: pointer; transition: 0.1s; }
+        .btn-restar:active { transform: scale(0.9); }
 
         /* MODAL CARRITO */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
@@ -251,30 +251,25 @@ function render(lista, autoExpand = false) {
 
         Object.keys(agrupados[modelo]).forEach(color => {
             
-            // AQUÍ ESTÁ EL CAMBIO: Ahora dice "MODELO - COLOR"
+            // Título: "MODELO - COLOR"
             html += `<div class="color">🎨 ${modelo} - ${color}</div><div class="grid">`;
 
             agrupados[modelo][color].forEach(p => {
                 let id = `${p.modelo}-${p.talla}-${p.color}`;
                 let qtyEnCarrito = carrito[id] ? carrito[id].qty : 0;
                 let claseActiva = qtyEnCarrito > 0 ? "active" : "";
-                let displayCtrl = qtyEnCarrito > 0 ? "flex" : "none";
+                
+                let badgeHtml = qtyEnCarrito > 0 ? `<div class="qty">x${qtyEnCarrito}</div>` : "";
+                let btnRestarHtml = qtyEnCarrito > 0 ? `<div class="btn-restar" onclick="restar('${id}', event)">−</div>` : "";
 
+                // Tarjeta entera es clickeable para sumar
                 html += `
-                <div id="${id}" class="item ${claseActiva}">
-                    
-                    <div onclick="clickItemPrincipal('${id}','${p.modelo}','${p.talla}','${p.color}',${p.precioVenta}, ${p.stock})" style="cursor:pointer; flex-grow: 1;">
-                        <div class="talla">${p.talla}</div>
-                        <div class="precio">S/ ${parseFloat(p.precioVenta).toFixed(2)}</div>
-                        <div class="stock">Disp: ${p.stock}</div>
-                    </div>
-                    
-                    <div class="controles-item" id="ctrl-${id}" style="display: ${displayCtrl};">
-                        <button class="btn-control minus" onclick="restar('${id}', event)">−</button>
-                        <span class="lbl-qty" id="qty-${id}">${qtyEnCarrito}</span>
-                        <button class="btn-control plus" onclick="sumarItem('${id}', event)">+</button>
-                    </div>
-
+                <div id="${id}" class="item ${claseActiva}" onclick="sumarItemPrincipal('${id}','${p.modelo}','${p.talla}','${p.color}',${p.precioVenta}, ${p.stock}, event)">
+                    ${btnRestarHtml}
+                    <div class="talla">${p.talla}</div>
+                    <div class="precio">S/ ${parseFloat(p.precioVenta).toFixed(2)}</div>
+                    <div class="stock">Disp: ${p.stock}</div>
+                    ${badgeHtml}
                 </div>`;
             });
             html += `</div>`;
@@ -285,30 +280,23 @@ function render(lista, autoExpand = false) {
     });
 }
 
-// AQUÍ ESTÁ EL CAMBIO: Función toggle inteligente (Acordeón único)
+// Acordeón único: Cierra otros al abrir uno nuevo
 function toggle(i) {
     let el = document.getElementById("c"+i);
     let isCurrentlyOpen = (el.style.display === "block");
 
-    // Primero, cerramos TODOS los contenidos que estén abiertos
     let todosLosContenidos = document.querySelectorAll('.contenido');
     todosLosContenidos.forEach(c => {
         c.style.display = "none";
     });
 
-    // Luego, si el que tocamos NO estaba abierto, lo abrimos. 
-    // (Si ya estaba abierto, se quedará cerrado, lo cual es el comportamiento correcto de un acordeón)
     if (!isCurrentlyOpen) {
         el.style.display = "block";
     }
 }
 
-function clickItemPrincipal(id, m, t, c, p, maxStock) {
-    if (carrito[id] && carrito[id].qty > 0) return;
-    agregar(id, m, t, c, p, maxStock);
-}
-
-function agregar(id, m, t, c, p, maxStock) {
+// Al hacer clic en la tarjeta, suma 1 (si hay stock)
+function sumarItemPrincipal(id, m, t, c, p, maxStock, e) {
     if (!carrito[id]) {
         carrito[id] = { m, t, c, p, maxStock, qty: 0 };
     }
@@ -322,6 +310,7 @@ function agregar(id, m, t, c, p, maxStock) {
     actualizarUI(id);
 }
 
+// Funciones extra para el carrito modal
 function sumarItem(id, e) {
     if (e) e.stopPropagation();
     if (carrito[id]) {
@@ -337,6 +326,7 @@ function sumarItem(id, e) {
     }
 }
 
+// Al hacer clic en el botón flotante rojo (–), resta 1
 function restar(id, e) {
     if (e) e.stopPropagation();
     if (carrito[id]) {
@@ -359,6 +349,7 @@ function quitar(id) {
     }
 }
 
+// Actualiza los botones flotantes en la interfaz
 function actualizarUI(id) {
     let totalItems = 0;
     Object.values(carrito).forEach(i => totalItems += i.qty);
@@ -366,16 +357,34 @@ function actualizarUI(id) {
 
     let el = document.getElementById(id);
     if(el) {
-        let ctrl = document.getElementById("ctrl-" + id);
-        let lbl = document.getElementById("qty-" + id);
-
         if(carrito[id] && carrito[id].qty > 0) {
             el.classList.add("active");
-            ctrl.style.display = "flex";
-            lbl.innerText = carrito[id].qty;
+            
+            // Badge superior derecho (Cantidad)
+            let badge = el.querySelector(".qty");
+            if(!badge) {
+                badge = document.createElement("div");
+                badge.className = "qty";
+                el.appendChild(badge);
+            }
+            badge.innerText = "x" + carrito[id].qty;
+
+            // Botón superior izquierdo (Restar)
+            let btnRestar = el.querySelector(".btn-restar");
+            if(!btnRestar) {
+                btnRestar = document.createElement("div");
+                btnRestar.className = "btn-restar";
+                btnRestar.innerHTML = "−";
+                btnRestar.onclick = function(e) { restar(id, e); };
+                el.insertBefore(btnRestar, el.firstChild);
+            }
+
         } else {
             el.classList.remove("active");
-            ctrl.style.display = "none";
+            let badge = el.querySelector(".qty");
+            if(badge) badge.remove();
+            let btnRestar = el.querySelector(".btn-restar");
+            if(btnRestar) btnRestar.remove();
         }
     }
 }
